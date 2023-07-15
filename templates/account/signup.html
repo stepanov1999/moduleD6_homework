@@ -1,0 +1,37 @@
+{% extends "news/default.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Sign up{% endblock %}
+
+{% block content %}
+    <h1 class="mb-5 mt-4">Регистрация</h1>
+    <div class="container d-flex flex-column">
+        <form method="post" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            {% for f in form %}
+                {% if f == form.become_author %}
+                {% else %}
+                    <div class="d-flex justify-content-center">{{ f|add_class:'form-control my-2 shadow'|attr:'style:width:250px' }}</div>
+                {% endif %}
+            {% endfor %}
+            <div class="my-3"><label class="me-3" for="id_become_author">{{ form.become_author.label }}</label>{{ form.become_author }}</div>
+
+            {% if form.errors %}
+                <div class="d-flex justify-content-center">
+                    <ul class="list-unstyled list-group w-50">
+                        {% for name, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li class="list-group-item list-group-item-danger">{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <button class="btn btn-secondary my-3 shadow" type="submit">Зарегистрироваться</button>
+        </form>
+        <hr class="align-self-center" style="width: 450px;">
+    </div>
+
+   <p>Уже есть аккаунт?</p>
+   <a class="btn btn-secondary shadow mb-4" href="{% url 'account_login' %}">Войти</a>
+{% endblock %}
