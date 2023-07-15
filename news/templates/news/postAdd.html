@@ -1,0 +1,32 @@
+{% extends 'news/default.html' %}
+{% load static %}
+
+{% block title %}{% if 'edit' in request.path %}Редактировать{% else %}Добавить{% endif %} пост{% endblock %}
+
+{% block content %}
+    <h1 class="my-3 my-lg-4">{% if 'edit' in request.path %}Редактировать{% else %}Добавить{% endif %} пост</h1>
+
+    {% block image %}
+        <img class="img" src={% static 'news/assets/post.jpg' %} alt="Картинка" width="100%">
+    {% endblock %}
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="row justify-content-center align-content-between">
+            {% for i in form %}
+                {% if i.label == 'Text' or i.label == 'Title' %}
+                    <div class="col-md-9 col-sm-10 col-12 mt-4 align-content-center">
+                        {{ i }}
+                    </div>
+                {% else %}
+                    <div class="col-6 col-sm-5 col-md-3">
+                        <label class="form-label fs-4" for="id_{{ i.name }}">{{ i.label }}</label>
+                        {{ i }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-block btn-secondary my-4" style="width: 120px">{% if 'edit' in request.path %}Изменить{% else %}
+            Добавить{% endif %}</button>
+    </form>
+{% endblock %}

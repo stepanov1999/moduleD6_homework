@@ -1,0 +1,29 @@
+{% extends 'news/default.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load news.custom_filters %}
+
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+    <h1 class="my-3 my-lg-4">Параметры поиска</h1>
+
+    {% block image %}
+        <img class="img" src={% static 'news/assets/search.jpg' %} alt="Картинка" width="100%">
+    {% endblock %}
+
+    <form method="get" class="mt-4">
+        <div class='row col-10 mx-auto'>
+            {% for f in filter.form %}
+                <div class="col-4">{{ f|add_class:'' }}</div>
+            {% endfor %}
+        </div>
+        <div class="d-grid gap-2 col-3 mx-auto">
+            <button type="submit" class="btn btn-secondary my-4">Искать</button>
+        </div>
+    </form>
+    {% for post in search %}
+        {% include 'news/postInList.html' %}
+    {% endfor %}
+{% endblock %}

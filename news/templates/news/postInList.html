@@ -1,0 +1,51 @@
+{% load news.custom_filters %}
+
+
+<div class="container-fluid rounded-5 shadow-lg p-4 my-4"
+     style="border-radius: 15px; max-width: 1000px">
+    <div class="row justify-content-between">
+        <div class="text-start col-9 overflow-auto">
+            <h2>{{ post.title | censor }}</h2>
+            <p class="fst-italic">Дата: {{ post.publish_time|date:'d.m.Y' }}</p>
+            <hr>
+            <p class="mt-4">{{ post.text | truncatewords:10 | censor }}</p>
+            <div class="mt-4">
+                {% include 'news/postCategoriesAjax.html' %}
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between" style="height: 40px">
+                <span class="text-end my-0 py-2">
+                    <span><strong>Комментарии:</strong> {{ post.comment_count }}</span>
+                    <span><strong>Рейтинг:</strong> <span>{{ post.voted_count }}</span></span>
+                </span>
+                {% if is_authenticated and post.author.author_user != user and  post not in voted_posts  %}
+                    <button
+                            class="vote-button btn-sm btn-primary text-decoration-none"
+                            data-url="{% url 'vote' post.pk %}"
+                            onclick="votePost(event)"
+                    >
+                        Оценить
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="text-end col-3 d-flex flex-column align-items-end justify-content-center overflow-hidden">
+            <div class="w-100">
+                <a class="btn btn-secondary btn-block w-100" href="{% url 'post' post.pk %}">Смотреть</a>
+            </div>
+
+            {% if is_authenticated and is_author and post.author.author_user == user  %}
+                <div class="w-100">
+                    <a class="btn btn-secondary btn-block w-100 my-3" href="{% url 'post_update' post.pk %}">Редактировать</a>
+                </div>
+                <div class="w-100">
+                    <button type="button" class="btn btn-secondary btn-block w-100" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal{{ post.pk }}">Удалить
+                    </button>
+                </div>
+                {% include 'news/postDeleteModal.html' %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+

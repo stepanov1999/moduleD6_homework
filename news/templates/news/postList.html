@@ -1,0 +1,24 @@
+{% extends 'news/default.html' %}
+{% load static %}
+{% load news.custom_filters %}
+
+{% block title %}
+    News List
+{% endblock %}
+
+{% block content %}
+    {% with user_categories=user %}
+    <h1 class="my-3 my-lg-4 fw-bold">Главная страница</h1>
+
+    {% block image %}
+        <img class="img" src={% static 'news/assets/home.jpg' %} alt="Картинка" width="100%">
+    {% endblock %}
+
+    <div class="news-list mb-4">
+        {% for post in news %}
+            {% include 'news/postInList.html' %}
+        {% endfor %}
+    </div>
+    {% endwith %}
+
+{% endblock %}

@@ -1,0 +1,24 @@
+<span class="me-2">Categories:</span>
+{% for cat in post.category.all %}
+    <div class="btn-group" role="group" aria-label="Categories:">
+        {% if is_authenticated %}
+            {% if user not in cat.subscribers.all %}
+                <form method="post" action="{% url 'subscribe' cat.pk %}" class="form-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-sm btn-outline-secondary mt-1"
+                            title="Press to subscribe">{{ cat.name }}</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'unsubscribe' cat.pk %}" class="form-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-sm btn-secondary mt-1"
+                            title="Press to unsubscribe">{{ cat.name }}</button>
+                </form>
+            {% endif %}
+        {% else %}
+            <span class="btn-sm btn-secondary mt-1"
+                  title="Login to subscribe">{{ cat.name }}</span>
+        {% endif %}
+    </div>
+{% endfor %}
+

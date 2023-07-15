@@ -1,0 +1,20 @@
+<div class="modal fade" id="addCatModal" tabindex="-1" aria-labelledby="addCatModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addCatModalLabel"><label for="name">Добавить категорию</label></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'add_category' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Введите название категории..." required>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary" id="confirm-delete">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

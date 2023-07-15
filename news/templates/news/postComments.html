@@ -1,0 +1,53 @@
+<div class="mx-auto mb-5" style="max-width: 600px">
+    {% with comments=post.comments.all %}
+    <h3 class="mb-4" id="comments-header">{% if comments %}Комментарии:{% else %}{% endif %}</h3>
+    <ul class="list-unstyled" id="comments-list">
+        {% if comments %}
+            {% for comment in comments %}
+                <li class="shadow rounded-3 mb-3">
+                    <div class="row p-2">
+                        <span class="me-auto"><strong>Автор: </strong>{{ comment.user }}</span>
+                        <span class="ms-auto">{{ comment.publish_time|date:"d.m.Y G:i:s" }}</span>
+                    </div>
+                    <hr class="my-0 mx-auto" style="width: 95%">
+                    <div class="mx-3 mt-3 text-start" >
+                        <p style="word-break: break-word" class="m-0 pb-3">{{ comment.text }}</p>
+                    </div>
+                    {% if user == comment.user %}
+                        <hr class="my-0 mx-auto" style="width: 95%">
+                        <button class="btn-sm btn-secondary my-2" data-bs-toggle="modal"
+                                data-bs-target="#deleteCommentModal" name="delete_comment"
+                                data-delete-url="{% url 'delete_comment' comment.pk %}"
+                                onclick="deleteComment(event)"
+                        >
+                            Delete
+                        </button>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    <!--Delete Comment Modal -->
+    <div class="modal fade" id="deleteCommentModal" tabindex="-1" aria-labelledby="deleteCommentModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteCommentModalLabel">Delete confirmation</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы действительно хотите удалить этот комментарий?
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="confirm-delete-comment">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+</div>

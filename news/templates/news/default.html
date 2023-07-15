@@ -1,0 +1,174 @@
+{% load static %}
+{% load socialaccount %}
+{% load news.custom_filters %}
+{% load cache %}
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content="Simple NewsPaper Site on Django 4.1.7"/>
+    <title>{% block title %}{% endblock title %} - Учебный новостной сайт</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href={% static "news/assets/favicon.ico" %} />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href={% static 'news/css/styles.css' %} rel="stylesheet"/>
+    <script src="https://kit.fontawesome.com/32d5dc53de.js" crossorigin="anonymous"></script>
+    {% block head %}{% endblock %}
+</head>
+<body class="d-flex flex-column h-100">
+
+{% with is_authenticated=request.user.is_authenticated is_author=request.user|is_author %}
+    <!-- Responsive navbar-->
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid col-11 col-lg-10 col-xl-12" style="max-width: 1200px">
+        <a class="navbar-brand" href="{% url 'home' %}">NewsPaper</a>
+        {% if menu %}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-center">
+                    {% if is_authenticated and not is_author %}
+                        <li class="nav-item"><a class="nav-link" aria-current="page" data-bs-toggle="modal"
+                                                data-bs-target="#upgradeModal" style="cursor: pointer">Стать автором</a>
+                        </li>
+                    {% endif %}
+                    {% for item in menu %}
+                        {% if item.url_name == request.resolver_match.url_name %}
+                            <li class="nav-item"><span class="nav-link active"
+                                                       aria-current="page">{{ item.title }}</span></li>
+                        {% elif item.title == 'Вход' %}
+                            {% if not is_authenticated %}
+                                <li class="nav-item"><a class="nav-link" aria-current="page"
+                                                        href="{% url 'account_login' %}">{{ item.title }}</a></li>
+                            {% endif %}
+                        {% elif item.title == 'Выход' %}
+                            {% if is_authenticated %}
+                                <li class="nav-item"><a class="nav-link" aria-current="page" data-bs-toggle="modal"
+                                                        data-bs-target="#logoutModal"
+                                                        style="cursor: pointer">{{ item.title }}</a></li>
+                            {% endif %}
+                        {% elif item.title == 'Добавить пост' %}
+                            {% if is_authenticated and is_author %}
+                                <li class="nav-item"><a class="nav-link" aria-current="page"
+                                                        href='{% url item.url_name %}'
+                                                        title="Add new post (daily limit: 3)">{{ item.title }}</a>
+                                </li>
+                            {% endif %}
+                        {% elif item.title == 'Добавить категорию' %}
+                            {% if is_authenticated and is_author %}
+                                <li class="nav-item"><a class="nav-link" aria-current="page" data-bs-toggle="modal"
+                                                        data-bs-target="#addCatModal"
+                                                        style="cursor: pointer">{{ item.title }}</a></li>
+                            {% endif %}
+                        {% elif item.title == 'Контакты' %}
+                            {% if is_authenticated %}
+                                <li class="nav-item"><a class="nav-link" aria-current="page"
+                                                        href='{% url item.url_name %}'>{{ item.title }}</a></li>
+                            {% endif %}
+                        {% else %}
+                            {% if item.url_name %}
+                                <li class="nav-item"><a class="nav-link" aria-current="page"
+                                                        href='{% url item.url_name %}'>{{ item.title }}</a></li>
+                            {% else %}
+                                <li class="nav-item"><a class="nav-link" aria-current="page"
+                                                        href=''>{{ item.title }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- Page content-->
+<div class="container-fluid">
+    <div class="text-center mx-auto container-fluid" style="max-width: 1200px">
+        {% block content %}
+        {% endblock content %}
+    </div>
+</div>
+
+<!-- Pagination-->
+{% if is_paginated %}
+    {% include 'news/pagination.html' %}
+{% endif %}
+
+<!-- Footer-->
+{% cache 3600 footer %}
+<footer class="bg-dark mt-auto">
+    <div class="row text-light p-3 col-sm-12 col-md-10 mx-auto" style="max-width: 1200px">
+        <div class="text-center col-8 w-100">
+            <p>Copyright © Учебный сайт</p>
+        </div>
+    </div>
+</footer>
+{% endcache %}
+
+<!-- Logout Modal -->
+{% if is_authenticated %}
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Выход из системы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Вы уверены, что хотите выйти?</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <form method="post" action="{% url 'account_logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Выйти</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% if is_authenticated and is_author %}
+    {% include 'news/addCategoryModal.html' %}
+{% endif %}
+
+
+<!-- Upgrade Modal -->
+{% if is_authenticated and not is_author %}
+    <div class="modal fade" id="upgradeModal" tabindex="-1" role="dialog" aria-labelledby="upgradeModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="upgradeModalLabel">Стать автором</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Вы действительно хотите стать автором?</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <form method="post" action="{% url 'upgrade' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Да!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endwith %}
+
+<!-- JS-->
+<script>const csrfToken = `{{ csrf_token }}`</script>
+<script src="{% static 'news/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'news/js/scripts.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% extends 'news/default.html' %}
+{% load news.custom_filters %}
+{% load cache %}
+
+{% block title %}
+    {{ post.title }}
+{% endblock %}
+
+{% block content %}
+    <h1 class="fw-bold my-3 my-lg-4">{{ post.title | censor }}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-4 text-start">
+            <span>Опубликовано: {{ post.publish_time | date:'d.m.Y f' }}</span>
+                <h6>Автор: {{ post.author }}</h6>
+        </div>
+        <div class="d-flex col-8 text-end justify-content-end align-items-center">
+            {% if  is_authenticated and is_author and post.author.author_user == user %}
+                <div>
+                    <a class="btn btn-secondary shadow" href="{% url 'post_update' post.pk %}">Редактировать</a>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-secondary mx-2 shadow" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal{{ post.pk }}">Удалить
+                    </button>
+                </div>
+                {% include 'news/postDeleteModal.html' %}
+            {% endif %}
+            <div>
+                <a class="btn btn-secondary" href="
+                        {% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}{% url 'home' %}{% endif %}">Назад</a>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <p class>{{ post.text | linebreaks }}</p>
+    <hr>
+
+    <!--Post Categories -->
+    <div class="text-start mb-3">
+        {% include 'news/postCategoriesAjax.html' %}
+    </div>
+
+
+    <!--Add Comment Button and Modal -->
+    {% if is_authenticated %}
+        <button class="btn btn-secondary mb-4 mt-3 shadow" data-bs-toggle="modal" data-bs-target="#addComment">
+            Добавить комментарий
+        </button>
+
+        <div class="modal fade" id="addComment" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <label for="commentText" class="modal-title fs-5" id="addCommentModalLabel">Добавить комментарий</label>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" action="{% url 'add_comment' post.pk %}" id="addCommentForm">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <textarea type="text" name="text" id="commentText" class="form-control"
+                                      style="min-height: 150px;" required
+                                      placeholder="Введите текст..."></textarea>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-primary" id="confirm-add" data-bs-dismiss="modal">
+                                Сохранить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% include 'news/postComments.html' %}
+{% endblock %}

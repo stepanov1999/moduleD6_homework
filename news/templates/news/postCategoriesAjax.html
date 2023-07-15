@@ -1,0 +1,29 @@
+<div class="btn-group d-flex flex-wrap" role="group" aria-label="Categories">
+    <span class="me-2 my-auto"><strong>Категории:</strong></span>
+    {% for cat in post.category.all %}
+        {% if is_authenticated %}
+            {% if cat not in user_category %}
+                <button
+                        class="btn-sm btn-outline-secondary m-1"
+                        data-url="{% url 'subscribe' cat.pk %}"
+                        title="Press to subscribe"
+                        onclick="subscribeCategory(event)"
+                >
+                    {{ cat.name }}
+                </button>
+            {% else %}
+                <button
+                        class="btn-sm btn-secondary m-1 shadow"
+                        title="Press to unsubscribe"
+                        data-url="{% url 'unsubscribe' cat.pk %}"
+                        onclick="unsubscribeCategory(event)"
+                >
+                    {{ cat.name }}
+                </button>
+            {% endif %}
+        {% else %}
+            <span class="btn-sm btn-secondary m-1 shadow"
+                  title="Login to subscribe">{{ cat.name }}</span>
+        {% endif %}
+    {% endfor %}
+</div>

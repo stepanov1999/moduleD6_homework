@@ -1,0 +1,22 @@
+{% extends 'news/default.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+    <h1 class="my-3 my-lg-4">Форма обратной связи</h1>
+
+    {% block image %}
+        <img class="img" src={% static 'news/assets/contacts.jpg' %} alt="Картинка" width="100%">
+    {% endblock %}
+    <br><br>
+
+    <form method="post" action="{% url 'contactus' %}" class="mx-auto" style="max-width: 600px">
+        {% for field in form %}
+            {{ field|add_class:"form-control mb-4"}}
+        {% endfor %}
+        {% csrf_token %}
+        <button class="btn btn-secondary my-3" style="width: 150px" type="submit">Отправить</button>
+    </form>
+{% endblock %}

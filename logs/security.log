@@ -1,0 +1,4 @@
+[2023-07-06 15:00:36,825] WARNING base Session data corrupted
+[2023-07-06 15:00:45,745] WARNING base Session data corrupted
+[2023-07-06 15:00:57,474] WARNING base Session data corrupted
+[2023-07-13 02:42:03,051] WARNING log Forbidden (CSRF token from POST incorrect.): /accounts/signup/
